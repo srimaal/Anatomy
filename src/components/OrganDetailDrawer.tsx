@@ -115,8 +115,8 @@ export const OrganDetailDrawer: React.FC<OrganDetailDrawerProps> = ({
             {educationLevel === 'al' && <span>🧬 G.C.E. Advanced Level Biology</span>}
             {educationLevel === 'medical' && <span>🩺 MBBS / USMLE Clinical Anatomy</span>}
           </div>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-900/60">
-            {part.systemId.toUpperCase()}
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-900/60 uppercase">
+            {part.speciesId ? `${part.speciesId} • ` : ''}{part.systemId}
           </span>
         </div>
 
@@ -129,7 +129,7 @@ export const OrganDetailDrawer: React.FC<OrganDetailDrawerProps> = ({
             </span>
           </h3>
           <p className="text-sm leading-relaxed text-slate-300">
-            {part.description[educationLevel][language]}
+            {part.description?.[educationLevel]?.[language] || part.description?.primary?.[language] || ''}
           </p>
         </div>
 
@@ -157,7 +157,7 @@ export const OrganDetailDrawer: React.FC<OrganDetailDrawerProps> = ({
             </span>
           </h3>
           <ul className="space-y-2">
-            {part.keyFunctions[educationLevel].map((fn, idx) => (
+            {(part.keyFunctions?.[educationLevel] || part.keyFunctions?.primary || []).map((fn, idx) => (
               <li key={idx} className="flex items-start gap-2 text-xs text-slate-300">
                 <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 mt-0.5 shrink-0" />
                 <span>{fn[language]}</span>

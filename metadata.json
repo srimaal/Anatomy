@@ -1,6 +1,6 @@
 {
   "name": "Human Anatomy 3D Explorer",
-  "description": "Interactive 3D human anatomy learning and quizzes in Sinhala, English, and Tamil, with Primary, Advanced Level, and Medical Student modes.",
+  "description": "Interactive 3D human and comparative vertebrate anatomy (Frog, Dog, Cat, Bird) learning and quizzes in Sinhala, English, and Tamil, with Primary, Advanced Level, and Medical Student modes.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

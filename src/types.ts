@@ -2,6 +2,8 @@ export type Language = 'en' | 'si' | 'ta';
 
 export type EducationLevel = 'primary' | 'al' | 'medical';
 
+export type SpeciesId = 'human' | 'frog' | 'dog' | 'cat' | 'bird';
+
 export type OrganSystemId = 
   | 'fullbody'
   | 'circulatory'
@@ -9,7 +11,12 @@ export type OrganSystemId =
   | 'nervous'
   | 'skeletal'
   | 'digestive'
-  | 'urinary';
+  | 'urinary'
+  | 'muscular'
+  | 'endocrine'
+  | 'lymphatic'
+  | 'integumentary'
+  | 'reproductive';
 
 export interface LocalizedString {
   en: string;
@@ -17,8 +24,36 @@ export interface LocalizedString {
   ta: string;
 }
 
+export interface SpeciesInfo {
+  id: SpeciesId;
+  name: LocalizedString;
+  commonName: LocalizedString;
+  scientificName: string;
+  taxonomicClass: LocalizedString;
+  habitat: LocalizedString;
+  iconName: string;
+  accentColor: string;
+  tagline: LocalizedString;
+  overview: {
+    primary: LocalizedString;
+    al: LocalizedString;
+    medical: LocalizedString;
+  };
+  keyAdaptations: LocalizedString[];
+  comparativeHighlights: {
+    feature: LocalizedString;
+    human: LocalizedString;
+    animal: LocalizedString;
+  }[];
+  statistics: {
+    label: LocalizedString;
+    value: string;
+  }[];
+}
+
 export interface OrganPart {
   id: string;
+  speciesId?: SpeciesId;
   name: LocalizedString;
   latinName?: string;
   systemId: OrganSystemId;
@@ -66,6 +101,7 @@ export interface SystemInfo {
 
 export interface QuizQuestion {
   id: string;
+  speciesId?: SpeciesId;
   systemId: OrganSystemId;
   level: EducationLevel;
   question: LocalizedString;

@@ -228,7 +228,7 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
 
         {/* Suggestions pills */}
         <div className="px-4 py-2 bg-slate-950/40 border-t border-slate-800/80 flex flex-wrap gap-1.5">
-          {suggestions[educationLevel].map((item, i) => (
+          {(suggestions[educationLevel] || suggestions.primary || []).map((item, i) => (
             <button
               key={i}
               onClick={() => handleSend(item[language])}

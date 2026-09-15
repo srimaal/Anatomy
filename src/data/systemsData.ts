@@ -1,6 +1,7 @@
 import { OrganPart, SystemInfo } from '../types';
+import { ADDITIONAL_SYSTEMS_INFO, ADDITIONAL_ORGAN_PARTS } from './additionalSystemsData';
 
-export const SYSTEMS_INFO: SystemInfo[] = [
+const BASE_SYSTEMS_INFO: SystemInfo[] = [
   {
     id: 'fullbody',
     name: {
@@ -332,7 +333,9 @@ export const SYSTEMS_INFO: SystemInfo[] = [
   }
 ];
 
-export const ORGAN_PARTS: OrganPart[] = [
+export const SYSTEMS_INFO: SystemInfo[] = [...BASE_SYSTEMS_INFO, ...ADDITIONAL_SYSTEMS_INFO];
+
+const BASE_ORGAN_PARTS: OrganPart[] = [
   // --- CIRCULATORY SYSTEM ---
   {
     id: 'heart_aorta',
@@ -2114,3 +2117,5 @@ export const ORGAN_PARTS: OrganPart[] = [
     }
   }
 ];
+
+export const ORGAN_PARTS: OrganPart[] = [...BASE_ORGAN_PARTS, ...ADDITIONAL_ORGAN_PARTS];

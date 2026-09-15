@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
-import { OrganPart, OrganSystemId, Language, EducationLevel } from '../types';
+import { OrganPart, OrganSystemId, SpeciesId, Language, EducationLevel } from '../types';
 import { 
   RotateCcw, 
   Play, 
@@ -23,9 +23,23 @@ import {
   buildUrinarySystem,
   buildFullBodySystem
 } from '../utils/anatomyModelBuilders';
+import {
+  buildMuscularSystem,
+  buildEndocrineSystem,
+  buildLymphaticSystem,
+  buildIntegumentarySystem,
+  buildReproductiveSystem
+} from '../utils/additionalAnatomyModelBuilders';
+import {
+  buildFrogAnatomy,
+  buildDogAnatomy,
+  buildCatAnatomy,
+  buildBirdAnatomy
+} from '../utils/animalModelBuilders';
 
 interface ThreeDViewerProps {
   systemId: OrganSystemId;
+  speciesId?: SpeciesId;
   parts: OrganPart[];
   selectedPartId: string | null;
   onSelectPart: (partId: string) => void;
@@ -35,6 +49,7 @@ interface ThreeDViewerProps {
 
 export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
   systemId,
+  speciesId = 'human',
   parts,
   selectedPartId,
   onSelectPart,
@@ -219,7 +234,15 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
     partsMeshMap.current.clear();
 
     // Build anatomical models using our high-fidelity procedural geometry engines
-    if (systemId === 'circulatory') {
+    if (speciesId === 'frog') {
+      buildFrogAnatomy(organGroup, partsMeshMap.current, isCutaway, isXRay);
+    } else if (speciesId === 'dog') {
+      buildDogAnatomy(organGroup, partsMeshMap.current, isCutaway, isXRay);
+    } else if (speciesId === 'cat') {
+      buildCatAnatomy(organGroup, partsMeshMap.current, isCutaway, isXRay);
+    } else if (speciesId === 'bird') {
+      buildBirdAnatomy(organGroup, partsMeshMap.current, isCutaway, isXRay);
+    } else if (systemId === 'circulatory') {
       buildCirculatorySystem(organGroup, partsMeshMap.current, isCutaway, isXRay);
     } else if (systemId === 'respiratory') {
       buildRespiratorySystem(organGroup, partsMeshMap.current, isCutaway, isXRay);
@@ -233,6 +256,16 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
       buildUrinarySystem(organGroup, partsMeshMap.current, isCutaway, isXRay);
     } else if (systemId === 'fullbody') {
       buildFullBodySystem(organGroup, partsMeshMap.current, isCutaway, isXRay);
+    } else if (systemId === 'muscular') {
+      buildMuscularSystem(organGroup, partsMeshMap.current, isCutaway, isXRay);
+    } else if (systemId === 'endocrine') {
+      buildEndocrineSystem(organGroup, partsMeshMap.current, isCutaway, isXRay);
+    } else if (systemId === 'lymphatic') {
+      buildLymphaticSystem(organGroup, partsMeshMap.current, isCutaway, isXRay);
+    } else if (systemId === 'integumentary') {
+      buildIntegumentarySystem(organGroup, partsMeshMap.current, isCutaway, isXRay);
+    } else if (systemId === 'reproductive') {
+      buildReproductiveSystem(organGroup, partsMeshMap.current, isCutaway, isXRay);
     }
 
     // Enable soft contact shadows across all organ components for deep photorealistic depth
@@ -255,7 +288,19 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
     }
     particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     const particleMat = new THREE.PointsMaterial({
-      color: systemId === 'circulatory' ? 0xff4444 : systemId === 'respiratory' ? 0x38bdf8 : systemId === 'fullbody' ? 0x06b6d4 : 0xa855f7,
+      color: speciesId === 'frog' ? 0x22c55e
+           : speciesId === 'dog' ? 0xf97316
+           : speciesId === 'cat' ? 0xa855f7
+           : speciesId === 'bird' ? 0x38bdf8
+           : systemId === 'circulatory' ? 0xff4444 
+           : systemId === 'respiratory' ? 0x38bdf8 
+           : systemId === 'fullbody' ? 0x06b6d4 
+           : systemId === 'muscular' ? 0xf43f5e
+           : systemId === 'endocrine' ? 0xf59e0b
+           : systemId === 'lymphatic' ? 0x10b981
+           : systemId === 'integumentary' ? 0x0ea5e9
+           : systemId === 'reproductive' ? 0xec4899
+           : 0xa855f7,
       size: 0.04,
       transparent: true,
       opacity: 0.65
@@ -270,7 +315,7 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
         particlesRef.current.geometry.dispose();
       }
     };
-  }, [systemId, isCutaway, isXRay]);
+  }, [systemId, speciesId, isCutaway, isXRay]);
 
   // Main Render & Animation Loop
   useEffect(() => {
@@ -288,9 +333,71 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
         updateCameraPosition();
       }
 
-      // Organ System Dynamic Realistic Physiology Animations
+      // Dynamic Realistic Physiology Animations
       if (organGroupRef.current && isPlaying) {
-        if (systemId === 'circulatory') {
+        if (speciesId === 'frog') {
+          // Frog 3-chambered heart pulsatile contraction & saccular lung ventilation
+          const frogHeart = partsMeshMap.current.get('frog_3chamber_heart');
+          if (frogHeart) {
+            const t = elapsed * 3.2;
+            const beat = Math.pow(Math.max(0, Math.sin(t)), 5) * 0.09;
+            frogHeart.scale.set(1.0 + beat, 1.0 - beat * 0.4, 1.0 + beat);
+          }
+          const frogLungs = partsMeshMap.current.get('frog_saccular_lungs');
+          if (frogLungs) {
+            const breath = Math.sin(elapsed * 2.2) * 0.07;
+            frogLungs.scale.set(1.0 + breath, 1.0 + breath * 0.4, 1.0 + breath);
+          }
+        } else if (speciesId === 'dog') {
+          // Canine athletic heartbeat, dead-space panting, and caudal rudder wagging
+          const dogHeart = partsMeshMap.current.get('dog_4chamber_heart');
+          if (dogHeart) {
+            const t = elapsed * 4.0;
+            const beat = Math.pow(Math.max(0, Math.sin(t)), 6) * 0.08;
+            dogHeart.scale.set(1.0 + beat, 1.0 - beat * 0.3, 1.0 + beat);
+          }
+          const dogLungs = partsMeshMap.current.get('dog_panting_lungs');
+          if (dogLungs) {
+            const pant = Math.sin(elapsed * 5.5) * 0.04;
+            dogLungs.scale.set(1.0 + pant, 1.0 + pant * 0.8, 1.0 + pant);
+          }
+          const dogTail = organGroupRef.current.getObjectByName('dog_tail');
+          if (dogTail) {
+            dogTail.rotation.y = Math.sin(elapsed * 5.0) * 0.25;
+          }
+        } else if (speciesId === 'cat') {
+          // Feline purring micro-vibrations and luminous tapetum scotopic glow
+          const catSpine = partsMeshMap.current.get('cat_flexible_spine');
+          if (catSpine) {
+            catSpine.rotation.z = Math.sin(elapsed * 1.5) * 0.04;
+          }
+          const tapetum = partsMeshMap.current.get('cat_tapetum_lucidum');
+          if (tapetum) {
+            const glow = (Math.sin(elapsed * 2.2) + 1) * 0.5;
+            tapetum.traverse(c => {
+              if (c instanceof THREE.Mesh && c.material && (c.material as THREE.MeshStandardMaterial).emissiveIntensity !== undefined) {
+                (c.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.4 + glow * 0.4;
+              }
+            });
+          }
+        } else if (speciesId === 'bird') {
+          // Avian 9 air sacs continuous bellows cycle, high-rate heart, and wing elevation
+          const airSacs = partsMeshMap.current.get('bird_9_air_sacs');
+          if (airSacs) {
+            const airCycle = Math.sin(elapsed * 2.4) * 0.06;
+            airSacs.scale.set(1.0 + airCycle, 1.0 + airCycle * 0.5, 1.0 + airCycle);
+          }
+          const birdHeart = partsMeshMap.current.get('bird_right_aortic_arch');
+          if (birdHeart) {
+            const t = elapsed * 4.8;
+            const beat = Math.pow(Math.max(0, Math.sin(t)), 6) * 0.07;
+            birdHeart.scale.set(1.0 + beat, 1.0 - beat * 0.3, 1.0 + beat);
+          }
+          const wings = partsMeshMap.current.get('bird_pneumatic_wing_bones');
+          if (wings) {
+            wings.rotation.z = Math.sin(elapsed * 1.8) * 0.06;
+          }
+        } else if (systemId === 'circulatory') {
           // Heartbeat pulse cycle with double systole-diastole contraction wave
           const t = elapsed * 3.8;
           const beatCycle = Math.pow(Math.max(0, Math.sin(t)), 6) * 0.07 + Math.pow(Math.max(0, Math.sin(t - 0.35)), 8) * 0.04;
@@ -319,6 +426,26 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
             const breath = Math.sin(elapsed * 1.8) * 0.04;
             lungsMesh.scale.set(1.0 + breath, 1.0 + breath * 0.6, 1.0 + breath);
           }
+        } else if (systemId === 'muscular') {
+          // Muscle rhythmic tonic contractility
+          const muscleTonus = 1.0 + Math.sin(elapsed * 2.2) * 0.015;
+          organGroupRef.current.scale.set(muscleTonus, 1.0, muscleTonus);
+        } else if (systemId === 'endocrine') {
+          // Hormonal secretion pulsation rhythm
+          const hormonePulse = 1.0 + Math.sin(elapsed * 2.5) * 0.02;
+          organGroupRef.current.scale.set(hormonePulse, hormonePulse, hormonePulse);
+        } else if (systemId === 'lymphatic') {
+          // Lymph valve propulsion pulsation
+          const lymphWave = 1.0 + Math.sin(elapsed * 1.6) * 0.018;
+          organGroupRef.current.scale.set(lymphWave, 1.0, lymphWave);
+        } else if (systemId === 'integumentary') {
+          // Cutaneous capillary vasomotor rhythm
+          const skinThrob = 1.0 + Math.sin(elapsed * 1.2) * 0.012;
+          organGroupRef.current.scale.set(skinThrob, skinThrob, skinThrob);
+        } else if (systemId === 'reproductive') {
+          // Endocrine ovarian & uterine hormonal rhythm
+          const reproPulse = 1.0 + Math.sin(elapsed * 1.9) * 0.016;
+          organGroupRef.current.scale.set(reproPulse, reproPulse, reproPulse);
         }
       }
 
@@ -383,7 +510,7 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
     reqAnimRef.current = animId;
 
     return () => cancelAnimationFrame(animId);
-  }, [systemId, isPlaying, autoRotate, animSpeed, explodedFactor, selectedPartId, updateCameraPosition]);
+  }, [systemId, speciesId, isPlaying, autoRotate, animSpeed, explodedFactor, selectedPartId, updateCameraPosition]);
 
   // Handle Mouse / Touch Orbit Controls
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -550,7 +677,7 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
         >
           <p className="font-bold text-cyan-400">{hoveredPart.name[language]}</p>
           <p className="text-[11px] text-slate-300 line-clamp-2 max-w-[220px]">
-            {hoveredPart.description[educationLevel][language]}
+            {hoveredPart.description?.[educationLevel]?.[language] || hoveredPart.description?.primary?.[language] || ''}
           </p>
         </div>
       )}

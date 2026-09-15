@@ -1,6 +1,7 @@
 import { QuizQuestion } from '../types';
+import { ADDITIONAL_QUIZZES_DATA } from './additionalQuizzesData';
 
-export const QUIZZES_DATA: QuizQuestion[] = [
+const BASE_QUIZZES_DATA: QuizQuestion[] = [
   // ==========================================
   // CIRCULATORY SYSTEM QUIZZES
   // ==========================================
@@ -922,3 +923,5 @@ export const QUIZZES_DATA: QuizQuestion[] = [
     relatedPartId: 'fullbody_abdominal_viscera'
   }
 ];
+
+export const QUIZZES_DATA: QuizQuestion[] = [...BASE_QUIZZES_DATA, ...ADDITIONAL_QUIZZES_DATA];
